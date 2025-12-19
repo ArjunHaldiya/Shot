@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
@@ -9,13 +10,18 @@ import uuid
 import shutil
 
 # Initialize FastAPI app
-app = FastAPI(title="Shot - API")
+app = FastAPI(title="Shot - Party & Mood API")
 
 # CORS - allows frontend to talk to backend
 # This is CRITICAL for React to communicate with Python
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174"],  # Vite's default port
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "https://shot.vercel.app",  # Add your Vercel URL here after frontend deploys
+        "https://*.vercel.app",     # Allow all Vercel preview deployments
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -308,7 +314,7 @@ DRINKS = {
 @app.get("/")
 def read_root():
     """Health check endpoint"""
-    return {"status": "Party Mood API is running! 🎉"}
+    return {"status": "Shot API is running! 🎉🍹"}
 
 @app.get("/mood/questions")
 def get_mood_questions():
@@ -497,16 +503,44 @@ def get_party_photos(party_code: str):
     if datetime.now() <= datetime.fromisoformat(party["end_time"]):
         raise HTTPException(403, "Photos are locked until the party ends! 🔒")
     
-    # Return photo list (in a real app, we'd return actual image URLs)
+    # Return photo list with full URLs
+    photo_list = []
+    for photo in photos[party_code]:
+        photo_list.append({
+            **photo,
+            "url": f"/party/{party_code}/photo/{photo['filename']}"
+        })
+    
     return {
-        "photos": photos[party_code],
-        "total": len(photos[party_code]),
+        "photos": photo_list,
+        "total": len(photo_list),
         "party_stats": {
             "duration": party["duration_hours"],
             "members": party["members"],
             "total_photos": party["photo_count"]
         }
     }
+
+@app.get("/party/{party_code}/photo/{filename}")
+def get_photo(party_code: str, filename: str):
+    """
+    Serve individual photo files
+    """
+    if party_code not in parties:
+        raise HTTPException(404, "Party not found")
+    
+    party = parties[party_code]
+    
+    # Check if party has ended
+    if datetime.now() <= datetime.fromisoformat(party["end_time"]):
+        raise HTTPException(403, "Photos are locked until the party ends!")
+    
+    # Check if photo exists
+    file_path = f"data/photos/{party_code}/{filename}"
+    if not os.path.exists(file_path):
+        raise HTTPException(404, "Photo not found")
+    
+    return FileResponse(file_path)
 
 if __name__ == "__main__":
     import uvicorn
