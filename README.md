@@ -4,7 +4,7 @@
 
 Shot is a modern web app that combines AI-powered mood-based drink recommendations with a unique "Party Wrapped" feature that captures memories throughout the night and reveals them when the party ends.
 
-![Shot Banner](c:\Users\arjun\OneDrive\Pictures\Screenshots\shotplaceholder.png)
+![Shot Banner](Add Later)
 
 ## ✨ Features
 
