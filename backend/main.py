@@ -16,11 +16,7 @@ app = FastAPI(title="Shot - Party & Mood API")
 # This is CRITICAL for React to communicate with Python
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "https://shot-black.vercel.app",
-    ],
+    allow_origins=["https://shot-black.vercel.app"],
     allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
