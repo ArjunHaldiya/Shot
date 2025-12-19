@@ -19,7 +19,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:5174",
-        "https://shot.vercel.app",  # Add your Vercel URL here after frontend deploys
+        "https://shot-black.vercel.app/",  # Add your Vercel URL here after frontend deploys
         "https://*.vercel.app",     # Allow all Vercel preview deployments
     ],
     allow_credentials=True,
