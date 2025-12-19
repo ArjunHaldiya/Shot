@@ -20,13 +20,13 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:5174",
         "https://shot-black.vercel.app",
-        "https://shot-79p0qd9x7-arjunhaldiyas-projects.vercel.app",
     ],
     allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 # Data Models (Pydantic) - defines the structure of our data
 class MoodAnswers(BaseModel):
     """User's answers to mood questions"""
